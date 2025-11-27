@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Photobooth — Final UI Fix</title>
+
+    <!-- Bootstrap & FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="container-app">
+        <div class="brand">
+            <div class="brand-left">
+                <a href="index.html"><i class="fa-solid fa-camera" style="color:#667eea"></i> Photobooth</a>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+                        <label class="small-meta mb-0 me-1">Photos</label>
+                        <select id="numSelect" class="form-select form-select-sm" style="width:80px">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3" selected>3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+            <div>
+                <small class="small-meta">Press <strong>Space</strong> to start/capture · <strong>M</strong> mirror ·
+                    <strong>S</strong> start/stop</small>
+            </div>
+        </div>
+
+        <div id="photoboothGrid" class="photobooth-grid">
+            <!-- CAMERA (left) -->
+            <div class="card-wrap camera-area">
+                <div style="position:relative;height:100%">
+                    <div id="startOverlay" class="start-overlay">
+                        <div class="start-inner">
+                            <button id="startBtn" class="btn btn-primary-gradient btn-round">
+                                <i class="fa-solid fa-camera me-2"></i><span id="startBtnText">Start Camera</span>
+                                <span id="startSpinner" class="ms-2 spinner-border spinner-border-sm"
+                                    style="display:none"></span>
+                            </button>
+                            <div style="margin-top:8px;color:var(--muted);font-size:13px">Allow camera permission</div>
+                        </div>
+                    </div>
+
+                    <div id="countdown" class="countdown" aria-hidden="true">3</div>
+                    <div id="flash" class="flash" aria-hidden="true"></div>
+
+                    <video id="video" autoplay playsinline muted class="filter-none"></video>
+                    <img id="capturedPhoto" alt="Captured photo" />
+
+                    <div class="shutter-wrap" aria-hidden="false">
+                        <div class="small-actions">
+                            <button id="stopBtn" class="btn btn-ghost btn-round" title="Stop Camera"
+                                style="display:none"><i class="fa-solid fa-stop"></i></button>
+                        </div>
+
+                        <div class="shutter-btn" id="shutterBtn" title="Capture">
+                            <div class="shutter-inner" id="shutterInner"><i class="fa-solid fa-circle"></i></div>
+                        </div>
+
+                        <div class="small-actions">
+                            <button id="mirrorBtn" class="btn btn-ghost btn-round" title="Mirror On/Off" style="display: none;"><i class="fa-solid fa-arrows-rotate"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PREVIEW (right) -->
+            <div class="card-wrap preview-area" id="previewArea" aria-live="polite">
+                <div class="preview-header">
+                    <div>
+                        <div style="font-weight:600">Preview / Strip</div>
+                        <div class="small-meta">Captured photos will appear here (vertical strip)</div>
+                    </div>
+                </div>
+
+                <div class="preview-strip" id="previewStrip">
+                    <div id="thumbContainer" style="display:flex;flex-direction:column;gap:12px;min-height:60px"></div>
+                    <div id="stripNote" class="small-meta" style="margin-top:8px">After sequence completes, you can
+                        download the strip or each image.</div>
+                </div>
+
+                <div style="display:flex;gap:10px;justify-content:flex-end;align-items:center;margin-top:6px">
+                    <button id="downloadStripBtn" class="btn btn-download btn-round" disabled><i
+                            class="fa-solid fa-download me-2"></i> Download Strip</button>
+                    <button id="downloadAllBtn" class="btn btn-ghost btn-round" disabled><i
+                            class="fa-solid fa-file-arrow-down me-2"></i> Download All</button>
+                    <button id="clearBtn" class="btn btn-ghost btn-round" disabled><i
+                            class="fa-solid fa-trash me-2"></i> Clear</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

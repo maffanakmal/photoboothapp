@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photobooth | Start</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .carousel-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            background: #ffffff;
+        }
+
+        .carousel {
+            width: 100%;
+            max-width: 850px;
+        }
+
+        .carousel-item {
+            height: 480px;
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+        }
+
+        /* Button area */
+        .cta-section {
+            padding: 2rem;
+            background: #ffffff;
+            text-align: center;
+            border-top: 1px solid #eee;
+        }
+
+        .btn-take-picture {
+            background: #4a4a4a;
+            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: 600;
+            padding: 1rem 3rem;
+            display: inline-flex;
+            align-items: center;
+            gap: .8rem;
+            border-radius: 50px;
+            border: none;
+            text-decoration: none;
+            transition: 0.25s;
+        }
+
+        .btn-take-picture:hover {
+            background: #000;
+            transform: translateY(-4px);
+        }
+
+        @media (max-width: 768px) {
+            .carousel-item {
+                height: 300px;
+            }
+
+            .btn-take-picture {
+                font-size: 1.2rem;
+                padding: .8rem 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="backBtn">
+        <a href="index.html">Back</a>
+    </div>
+
+    <!-- TOP CAROUSEL -->
+    <div class="carousel-container">
+        <div id="photoCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+            <div class="carousel-inner">
+
+                <div class="carousel-item active">
+                    <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1200&fit=crop" alt="">
+                </div>
+
+                <div class="carousel-item">
+                    <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&fit=crop" alt="">
+                </div>
+
+                <div class="carousel-item">
+                    <img src="https://images.unsplash.com/photo-1464047736614-af63643285bf?w=1200&fit=crop" alt="">
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM CTA -->
+    <div class="cta-section">
+        <a href="photo-page.html" class="btn-take-picture">
+            <i class="fas fa-camera"></i> Let’s Take a Picture!
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-play carousel every 2.5s
+        new bootstrap.Carousel(document.getElementById('photoCarousel'), {
+            interval: 2500,
+            ride: 'carousel'
+        });
+    </script>
+
+</body>
+
+</html>
