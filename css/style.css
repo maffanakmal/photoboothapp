@@ -67,7 +67,7 @@ body {
 
 /* When preview visible, switch to two columns */
 .photobooth-grid.show-preview {
-    grid-template-columns: 60% 40%
+    grid-template-columns: 70% 30%
 }
 
 .card-wrap {
