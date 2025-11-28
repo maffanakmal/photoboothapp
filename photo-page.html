@@ -4,12 +4,11 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Photobooth — Final UI Fix</title>
+    <title>apxbooth</title>
 
     <!-- Bootstrap & FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <!-- <link rel="stylesheet" href="css/style.css"> -->
     <style>
         :root {
             --bg: #f7f9fc;
@@ -70,7 +69,6 @@
             font-size: 13px
         }
 
-        /* Grid: default NO preview (camera full width) */
         .photobooth-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -78,7 +76,6 @@
             transition: all .24s ease
         }
 
-        /* When preview visible, switch to two columns */
         .photobooth-grid.show-preview {
             grid-template-columns: 70% 30%
         }
@@ -91,7 +88,6 @@
             border: 1px solid rgba(15, 23, 36, 0.04)
         }
 
-        /* LEFT camera */
         .camera-area {
             position: relative;
             background: #000;
@@ -111,7 +107,6 @@
             display: none
         }
 
-        /* Start overlay */
         .start-overlay {
             position: absolute;
             inset: 0;
@@ -138,7 +133,6 @@
             font-weight: 600
         }
 
-        /* Circular countdown (transparent) */
         .countdown {
             position: absolute;
             left: 50%;
@@ -213,7 +207,6 @@
             }
         }
 
-        /* Shutter centered in camera area */
         .shutter-wrap {
             position: absolute;
             left: 50%;
@@ -256,7 +249,6 @@
             gap: 8px;
             align-items: center;
             padding: 5px;
-
             border-radius: 50px;
             background: rgba(255, 255, 255, 0.18);
             backdrop-filter: blur(6px);
@@ -280,7 +272,6 @@
             border: none
         }
 
-        /* mirror + filters */
         video.mirror {
             transform: scaleX(-1)
         }
@@ -289,7 +280,43 @@
             transform: scaleX(-1)
         }
 
-        /* RIGHT preview */
+        /* Photo Filters */
+        .filter-none {
+            filter: none;
+        }
+
+        .filter-grayscale {
+            filter: grayscale(100%);
+        }
+
+        .filter-sepia {
+            filter: sepia(80%);
+        }
+
+        .filter-vintage {
+            filter: sepia(50%) contrast(1.2) brightness(0.9);
+        }
+
+        .filter-warm {
+            filter: saturate(1.4) hue-rotate(-10deg) brightness(1.1);
+        }
+
+        .filter-cool {
+            filter: saturate(1.2) hue-rotate(10deg) brightness(1.05);
+        }
+
+        .filter-dramatic {
+            filter: contrast(1.5) brightness(0.95) saturate(1.3);
+        }
+
+        .filter-fade {
+            filter: brightness(1.1) contrast(0.85) saturate(0.8);
+        }
+
+        .filter-noir {
+            filter: grayscale(100%) contrast(1.3) brightness(0.9);
+        }
+
         .preview-area {
             display: flex;
             flex-direction: column;
@@ -342,7 +369,6 @@
             color: var(--muted)
         }
 
-        /* responsive */
         @media(max-width:900px) {
             .photobooth-grid {
                 grid-template-columns: 1fr
@@ -367,7 +393,7 @@
     <div class="container-app">
         <div class="brand">
             <div class="brand-left">
-                <a href="index.html"><i class="fa-solid fa-camera" style="color:#667eea"></i> Photobooth</a>
+                <a href="index.html" style="text-decoration: none;"><i class="fa-solid fa-camera" style="color:#667eea"></i> apxbooth</a>
             </div>
             <div style="display:flex;gap:8px;align-items:center">
                 <label class="small-meta mb-0 me-1">Photos</label>
@@ -379,10 +405,44 @@
                     <option value="5">5</option>
                 </select>
             </div>
-            <div>
+            <div style="display:flex;gap:8px;align-items:center">
+                <label class="small-meta mb-0 me-1">Filter</label>
+                <select id="filterSelect" class="form-select form-select-sm" style="width:120px">
+                    <option value="none" selected disabled>None</option>
+                    <option value="grayscale">Grayscale</option>
+                    <option value="sepia">Sepia</option>
+                    <option value="vintage">Vintage</option>
+                    <option value="warm">Warm</option>
+                    <option value="cool">Cool</option>
+                    <option value="dramatic">Dramatic</option>
+                    <option value="fade">Fade</option>
+                    <option value="noir">Noir</option>
+                </select>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+                <label class="small-meta mb-0 me-1">Frame Color</label>
+                <input type="color" id="frameColorPicker" class="form-control form-control-color" value="#667eea"
+                    style="width:50px;height:32px">
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+                <input type="text" id="frameText" class="form-control form-control-sm" placeholder="Event name..."
+                    style="width:150px">
+                <select id="fontSelect" class="form-select form-select-sm" style="width:120px">
+                    <option value="font" selected disabled>Font</option>
+                    <option value="Poppins">Poppins</option>
+                    <option value="Arial">Arial</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Times New Roman">Times</option>
+                    <option value="Courier New">Courier</option>
+                    <option value="Comic Sans MS">Comic Sans</option>
+                    <option value="Impact">Impact</option>
+                    <option value="Verdana">Verdana</option>
+                </select>
+            </div>
+            <!-- <div>
                 <small class="small-meta">Press <strong>Space</strong> to start/capture · <strong>M</strong> mirror ·
                     <strong>S</strong> start/stop</small>
-            </div>
+            </div> -->
         </div>
 
         <div id="photoboothGrid" class="photobooth-grid">
@@ -451,7 +511,6 @@
         </div>
     </div>
 
-    <!-- <script src="js/script.js"></script> -->
     <script>
         // Elements
         const photoboothGrid = document.getElementById('photoboothGrid');
@@ -474,6 +533,10 @@
         const downloadStripBtn = document.getElementById('downloadStripBtn');
         const downloadAllBtn = document.getElementById('downloadAllBtn');
         const clearBtn = document.getElementById('clearBtn');
+        const frameColorPicker = document.getElementById('frameColorPicker');
+        const frameText = document.getElementById('frameText');
+        const filterSelect = document.getElementById('filterSelect');
+        const fontSelect = document.getElementById('fontSelect');
 
         // offscreen canvas
         const offCanvas = document.createElement('canvas');
@@ -483,13 +546,15 @@
         let currentFilter = 'none';
         let isMirrored = false;
         let inSequence = false;
-        let capturedData = []; // data URLs array
+        let capturedData = [];
+        let frameColor = '#667eea';
+        let frameTextValue = '';
+        let selectedFont = 'Poppins';
 
-        const DELAY_MS = 3000; // 3 seconds (countdown is 3s)
+        const DELAY_MS = 3000;
 
         // Helpers
         function updatePreviewVisibility() {
-            // Preview auto-hide until capturedData.length >= 3
             if (capturedData.length >= 1) {
                 photoboothGrid.classList.add('show-preview');
             } else {
@@ -499,9 +564,14 @@
 
         function setActiveFilterButton(name) {
             currentFilter = name;
+            video.classList.remove('filter-none', 'filter-grayscale', 'filter-sepia', 'filter-vintage',
+                'filter-warm', 'filter-cool', 'filter-dramatic', 'filter-fade', 'filter-noir');
+            video.classList.add('filter-' + name);
         }
+
         function applyFilterToVideo(name) {
-            video.classList.remove(...[...video.classList].filter(c => c.startsWith('filter-')));
+            video.classList.remove('filter-none', 'filter-grayscale', 'filter-sepia', 'filter-vintage',
+                'filter-warm', 'filter-cool', 'filter-dramatic', 'filter-fade', 'filter-noir');
             video.classList.add('filter-' + name);
             currentFilter = name;
         }
@@ -539,7 +609,11 @@
             startOverlay.style.display = 'flex';
             stopBtn.style.display = 'none';
             mirrorBtn.style.display = 'none';
-            // keep preview intact
+            
+            numSelect.value = '3';
+            filterSelect.value = 'none';
+            frameColorPicker.value = '#667eea';
+            frameText.value = 'font';
         }
 
         function flash() {
@@ -587,21 +661,64 @@
             })));
             const validImgs = imgs.filter(i => i !== null);
             if (validImgs.length === 0) return null;
+
+            // Frame settings
+            const framePadding = 40;
+            const frameTopHeight = 120;
+            const frameBottomHeight = 80;
+            const photoSpacing = 20;
+
             const widths = validImgs.map(i => i.width);
             const targetWidth = Math.max(...widths);
+            const contentWidth = targetWidth + (framePadding * 2);
             const heights = validImgs.map(i => Math.round(i.height * (targetWidth / i.width)));
-            const totalHeight = heights.reduce((a, b) => a + b, 0);
+            const totalPhotoHeight = heights.reduce((a, b) => a + b, 0);
+            const totalSpacing = (validImgs.length - 1) * photoSpacing;
+            const totalHeight = frameTopHeight + totalPhotoHeight + totalSpacing + frameBottomHeight;
+
             const stripCanvas = document.createElement('canvas');
-            stripCanvas.width = targetWidth;
+            stripCanvas.width = contentWidth;
             stripCanvas.height = totalHeight;
             const ctx = stripCanvas.getContext('2d');
-            let y = 0;
+
+            // Draw frame background
+            ctx.fillStyle = frameColor;
+            ctx.fillRect(0, 0, contentWidth, totalHeight);
+
+            // Draw header text if provided
+            if (frameTextValue.trim()) {
+                ctx.fillStyle = '#ffffff';
+                ctx.font = `bold 32px ${selectedFont}, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(frameTextValue.trim(), contentWidth / 2, frameTopHeight / 2);
+            }
+
+            // Draw photos with white border
+            let y = frameTopHeight;
             for (let idx = 0; idx < validImgs.length; idx++) {
                 const img = validImgs[idx];
                 const h = heights[idx];
-                ctx.drawImage(img, 0, y, targetWidth, h);
-                y += h;
+
+                // White border around photo
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(framePadding - 5, y - 5, targetWidth + 10, h + 10);
+
+                // Draw photo
+                ctx.drawImage(img, framePadding, y, targetWidth, h);
+                y += h + photoSpacing;
             }
+
+            // Draw footer with timestamp
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `18px ${selectedFont}, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.fillText(`${dateStr} • ${timeStr}`, contentWidth / 2, totalHeight - (frameBottomHeight / 2));
+
             return stripCanvas.toDataURL('image/png');
         }
 
@@ -672,12 +789,9 @@
                     capturedData.push(data);
                     refreshThumbs();
                 }
-                // no extra wait: countdown itself is 3s
             }
 
-            // After sequence done, ensure preview visibility update
             updatePreviewVisibility();
-            // Optionally create strip to show top or allow download; we'll keep thumbnails updated
             inSequence = false;
         }
 
@@ -705,19 +819,19 @@
         });
 
         // keyboard shortcuts
-        window.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                if (document.activeElement && /input|textarea|select/i.test(document.activeElement.tagName)) return;
-                e.preventDefault();
-                shutterBtn.click();
-            }
-            if (e.key === 's' || e.key === 'S') {
-                if (!stream) startCamera(); else stopCamera();
-            }
-            if (e.key === 'm' || e.key === 'M') {
-                mirrorBtn.click();
-            }
-        });
+        // window.addEventListener('keydown', (e) => {
+        //     if (e.code === 'Space') {
+        //         if (document.activeElement && /input|textarea|select/i.test(document.activeElement.tagName)) return;
+        //         e.preventDefault();
+        //         shutterBtn.click();
+        //     }
+        //     if (e.key === 's' || e.key === 'S') {
+        //         if (!stream) startCamera(); else stopCamera();
+        //     }
+        //     if (e.key === 'm' || e.key === 'M') {
+        //         mirrorBtn.click();
+        //     }
+        // });
 
         // downloads and clear handlers
         downloadAllBtn.addEventListener('click', () => {
@@ -734,101 +848,31 @@
             updatePreviewVisibility();
         });
 
+        // Frame customization handlers
+        frameColorPicker.addEventListener('input', (e) => {
+            frameColor = e.target.value;
+        });
+
+        frameText.addEventListener('input', (e) => {
+            frameTextValue = e.target.value;
+        });
+
+        // Filter selection handler
+        filterSelect.addEventListener('change', (e) => {
+            applyFilterToVideo(e.target.value);
+        });
+
+        // Font selection handler
+        fontSelect.addEventListener('change', (e) => {
+            selectedFont = e.target.value;
+        });
+
         // cleanup
         window.addEventListener('beforeunload', () => { if (stream) stream.getTracks().forEach(t => t.stop()); });
 
         // initial
         updatePreviewVisibility();
         toggleActions();
-
-        function triggerDownload(dataUrl, filename) {
-            const a = document.createElement('a');
-            a.href = dataUrl;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
-
-        // Clear all captured photos
-        function clearAll() {
-            capturedData = [];
-            refreshThumbs();
-            updatePreviewVisibility();
-        }
-
-        // Download all photos one by one
-        function downloadAllPhotos() {
-            capturedData.forEach((d, i) => {
-                triggerDownload(d, `photo-${i + 1}.png`);
-            });
-        }
-
-        // Download vertical strip
-        async function downloadStrip() {
-            const strip = await createVerticalStripFromData(capturedData);
-            if (!strip) return;
-            triggerDownload(strip, 'photobooth-strip.png');
-        }
-
-        // Capture sequence
-        async function captureSequence() {
-            if (inSequence) return;
-            inSequence = true;
-
-            const total = parseInt(numSelect.value, 10) || 3;
-
-            for (let i = 0; i < total; i++) {
-                await runCountdown();
-                flash();
-                const data = captureOnce();
-                if (data) capturedData.push(data);
-                refreshThumbs();
-                updatePreviewVisibility();
-                if (i < total - 1) await new Promise(r => setTimeout(r, 350));
-            }
-
-            inSequence = false;
-        }
-
-        // Toggle mirror
-        function toggleMirror() {
-            isMirrored = !isMirrored;
-            if (isMirrored) video.classList.add('mirror');
-            else video.classList.remove('mirror');
-            refreshThumbs();
-        }
-
-        // EVENTS
-        startBtn.onclick = startCamera;
-        stopBtn.onclick = stopCamera;
-        mirrorBtn.onclick = toggleMirror;
-
-        shutterBtn.onclick = () => {
-            if (!stream) return startCamera();
-            captureSequence();
-        };
-
-        clearBtn.onclick = clearAll;
-        downloadAllBtn.onclick = downloadAllPhotos;
-        downloadStripBtn.onclick = downloadStrip;
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                e.preventDefault();
-                if (!stream) startCamera();
-                else shutterBtn.click();
-            }
-            if (e.key.toLowerCase() === 'm') {
-                if (stream) toggleMirror();
-            }
-            if (e.key.toLowerCase() === 's') {
-                if (stream) stopCamera();
-                else startCamera();
-            }
-        });
-
     </script>
 </body>
 
