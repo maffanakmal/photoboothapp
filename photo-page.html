@@ -77,7 +77,8 @@
         }
 
         .photobooth-grid.show-preview {
-            grid-template-columns: 70% 30%
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto;
         }
 
         .card-wrap {
@@ -324,8 +325,15 @@
             padding: 14px;
             min-height: 420px;
             opacity: 0;
+            order: 2;
             transform: translateY(6px);
             transition: opacity .28s ease, transform .28s ease
+        }
+
+        .preview-row {
+            display: grid;
+            grid-template-columns: 1fr 260px;
+            gap: 14px;
         }
 
         .photobooth-grid.show-preview .preview-area {
@@ -386,6 +394,98 @@
                 order: 2
             }
         }
+
+        .frame-preview {
+            background: #f4f6fb;
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 280px;
+        }
+
+        #frameBox {
+            width: 180px;
+            height: 260px;
+            background: white;
+            border: 10px solid var(--accent-grad);
+            border-color: var(--frame-color, #667eea);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        #frameTextPreview {
+            width: 100%;
+            text-align: center;
+            padding: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.7);
+            font-family: var(--frame-font, Poppins);
+        }
+
+        #framePhotoContainer {
+            position: absolute;
+            top: 10px;
+            bottom: 40px;
+            left: 10px;
+            right: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            gap: 6px;
+        }
+
+        .frame-photo-item {
+            width: 100%;
+            height: calc((100% - 18px) / 3);
+            /* auto adjusts based on 3 photos */
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        #stickerLayer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .sticker {
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            cursor: move;
+            pointer-events: auto;
+        }
+
+
+        .sticker-toolbar {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .emoji-btn {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: 32px;
+            height: 32px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+
+        @media(max-width:900px) {
+            .preview-row {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
@@ -393,7 +493,8 @@
     <div class="container-app">
         <div class="brand">
             <div class="brand-left">
-                <a href="index.html" style="text-decoration: none;"><i class="fa-solid fa-camera" style="color:#667eea"></i> apxbooth</a>
+                <a href="index.html" style="text-decoration: none;"><i class="fa-solid fa-camera"
+                        style="color:#667eea"></i> apxbooth</a>
             </div>
             <div style="display:flex;gap:8px;align-items:center">
                 <label class="small-meta mb-0 me-1">Photos</label>
@@ -408,7 +509,7 @@
             <div style="display:flex;gap:8px;align-items:center">
                 <label class="small-meta mb-0 me-1">Filter</label>
                 <select id="filterSelect" class="form-select form-select-sm" style="width:120px">
-                    <option value="none" selected disabled>None</option>
+                    <option value="none" selected>None</option>
                     <option value="grayscale">Grayscale</option>
                     <option value="sepia">Sepia</option>
                     <option value="vintage">Vintage</option>
@@ -428,7 +529,7 @@
                 <input type="text" id="frameText" class="form-control form-control-sm" placeholder="Event name..."
                     style="width:150px">
                 <select id="fontSelect" class="form-select form-select-sm" style="width:120px">
-                    <option value="font" selected disabled>Font</option>
+                    <option value="font" selected>Font</option>
                     <option value="Poppins">Poppins</option>
                     <option value="Arial">Arial</option>
                     <option value="Georgia">Georgia</option>
@@ -485,34 +586,51 @@
             </div>
 
             <!-- PREVIEW (right) -->
-            <div class="card-wrap preview-area" id="previewArea" aria-live="polite">
+            <div class="preview-area" id="previewArea">
                 <div class="preview-header">
                     <div>
-                        <div style="font-weight:600">Preview / Strip</div>
-                        <div class="small-meta">Captured photos will appear here (vertical strip)</div>
+                        <div style="font-weight:600">Preview</div>
+                        <div class="small-meta">Captured photos will appear here</div>
+                    </div>
+                </div>
+                <div class="preview-row">
+                    <!-- LEFT: PHOTO STRIP -->
+                    <div class="preview-strip" id="previewStrip">
+                        <div id="thumbContainer" style="display:flex;flex-direction:column;gap:12px;min-height:60px">
+                        </div>
+                        <div id="stripNote" class="small-meta" style="margin-top:8px">
+                            After sequence completes, you can download the strip.
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: LIVE FRAME PREVIEW -->
+                    <div class="frame-preview" id="framePreview">
+                        <div id="frameBox">
+                            <div id="framePhotoContainer"></div>
+                            <div id="stickerLayer"></div>
+                            <div id="frameTextPreview">Event Name</div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="preview-strip" id="previewStrip">
-                    <div id="thumbContainer" style="display:flex;flex-direction:column;gap:12px;min-height:60px"></div>
-                    <div id="stripNote" class="small-meta" style="margin-top:8px">After sequence completes, you can
-                        download the strip or each image.</div>
-                </div>
-
                 <div style="display:flex;gap:10px;justify-content:flex-end;align-items:center;margin-top:6px">
-                    <button id="downloadStripBtn" class="btn btn-download btn-round" disabled><i
-                            class="fa-solid fa-download me-2"></i> Download Strip</button>
-                    <button id="downloadAllBtn" class="btn btn-ghost btn-round" disabled><i
-                            class="fa-solid fa-file-arrow-down me-2"></i> Download All</button>
-                    <button id="clearBtn" class="btn btn-ghost btn-round" disabled><i
-                            class="fa-solid fa-trash me-2"></i> Clear</button>
+                    <button id="downloadStripBtn" class="btn btn-download btn-round" disabled>
+                        <i class="fa-solid fa-download me-2"></i> Download Strip
+                    </button>
+                    <button id="downloadAllBtn" class="btn btn-ghost btn-round" disabled>
+                        <i class="fa-solid fa-file-arrow-down me-2"></i> Download All
+                    </button>
+                    <button id="clearBtn" class="btn btn-ghost btn-round" disabled>
+                        <i class="fa-solid fa-trash me-2"></i> Clear All
+                    </button>
                 </div>
             </div>
+
         </div>
     </div>
 
     <script>
-        // Elements
+        // Elements (safe queries - will create missing pieces if needed)
         const photoboothGrid = document.getElementById('photoboothGrid');
         const startBtn = document.getElementById('startBtn');
         const startBtnText = document.getElementById('startBtnText');
@@ -531,12 +649,96 @@
         const thumbContainer = document.getElementById('thumbContainer');
         const previewArea = document.getElementById('previewArea');
         const downloadStripBtn = document.getElementById('downloadStripBtn');
-        const downloadAllBtn = document.getElementById('downloadAllBtn');
+        const downloadAllBtn = document.getElementById('downloadAllBtn'); // fixed name
         const clearBtn = document.getElementById('clearBtn');
+
         const frameColorPicker = document.getElementById('frameColorPicker');
         const frameText = document.getElementById('frameText');
         const filterSelect = document.getElementById('filterSelect');
         const fontSelect = document.getElementById('fontSelect');
+
+        const frameBox = document.getElementById('frameBox');
+        const frameTextPreview = document.getElementById('frameTextPreview');
+
+        let capturedPhotos = [];
+
+        // Create a live photo preview image inside frameBox if it's missing
+        let framePhotoPreview = document.getElementById('framePhotoPreview');
+        if (!framePhotoPreview) {
+            if (frameBox) {
+                framePhotoPreview = document.createElement('img');
+                framePhotoPreview.id = 'framePhotoPreview';
+                framePhotoPreview.style.position = 'absolute';
+                framePhotoPreview.style.inset = '12px 12px 48px 12px'; // leave space for header/footer
+                framePhotoPreview.style.width = 'calc(100% - 24px)';
+                framePhotoPreview.style.height = 'calc(100% - 60px)';
+                framePhotoPreview.style.objectFit = 'cover';
+                framePhotoPreview.style.display = 'none';
+                framePhotoPreview.style.borderRadius = '6px';
+                frameBox.appendChild(framePhotoPreview);
+            } else {
+                // fallback: create in body so code won't crash (rare)
+                framePhotoPreview = document.createElement('img');
+                framePhotoPreview.id = 'framePhotoPreview';
+                framePhotoPreview.style.display = 'none';
+                document.body.appendChild(framePhotoPreview);
+            }
+        }
+
+        // Create a sticker panel (toolbar) next to preview if missing
+        let stickerPanel = document.getElementById('stickerPanel');
+        if (!stickerPanel) {
+            // prefer to append to previewArea or frameBox
+            const container = previewArea || frameBox || document.body;
+            stickerPanel = document.createElement('div');
+            stickerPanel.id = 'stickerPanel';
+            stickerPanel.className = 'sticker-toolbar';
+            stickerPanel.style.display = 'flex';
+            stickerPanel.style.gap = '6px';
+            stickerPanel.style.marginTop = '8px';
+
+            // default emojis
+            const EMOJI_SET = ['😀', '😍', '🎉', '💖', '😎', '🤩', '😊', '🥰', '😇', '🥺', '🐻', '🐰', '🍓', '🍕', '🌮', '☀️', '🌈', '🦋'];
+            EMOJI_SET.forEach(e => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'emoji-btn';
+                btn.textContent = e;
+                btn.style.width = '36px';
+                btn.style.height = '36px';
+                btn.style.borderRadius = '6px';
+                btn.style.fontSize = '18px';
+                btn.style.cursor = 'pointer';
+                stickerPanel.appendChild(btn);
+            });
+
+            // place stickerPanel into previewStrip area if possible
+            if (previewArea) {
+                // insert at top of previewArea
+                previewArea.insertBefore(stickerPanel, previewArea.firstChild);
+            } else if (frameBox) {
+                frameBox.appendChild(stickerPanel);
+            } else {
+                document.body.appendChild(stickerPanel);
+            }
+        }
+
+        // Create sticker layer container if not present (stickers live inside frameBox)
+        let stickerLayer = document.getElementById('stickerLayer');
+        if (!stickerLayer) {
+            if (frameBox) {
+                stickerLayer = document.createElement('div');
+                stickerLayer.id = 'stickerLayer';
+                stickerLayer.style.position = 'absolute';
+                stickerLayer.style.inset = '0';
+                stickerLayer.style.pointerEvents = 'none'; // individual stickers will allow pointer events
+                frameBox.appendChild(stickerLayer);
+            } else {
+                stickerLayer = document.createElement('div');
+                stickerLayer.id = 'stickerLayer';
+                document.body.appendChild(stickerLayer);
+            }
+        }
 
         // offscreen canvas
         const offCanvas = document.createElement('canvas');
@@ -547,29 +749,31 @@
         let isMirrored = false;
         let inSequence = false;
         let capturedData = [];
-        let frameColor = '#667eea';
+        let frameColor = (frameColorPicker && frameColorPicker.value) ? frameColorPicker.value : '#667eea';
         let frameTextValue = '';
-        let selectedFont = 'Poppins';
+        let selectedFont = (fontSelect && fontSelect.value) ? fontSelect.value : 'Poppins';
 
         const DELAY_MS = 3000;
 
         // Helpers
         function updatePreviewVisibility() {
             if (capturedData.length >= 1) {
-                photoboothGrid.classList.add('show-preview');
+                photoboothGrid && photoboothGrid.classList.add('show-preview');
             } else {
-                photoboothGrid.classList.remove('show-preview');
+                photoboothGrid && photoboothGrid.classList.remove('show-preview');
             }
         }
 
         function setActiveFilterButton(name) {
             currentFilter = name;
+            if (!video) return;
             video.classList.remove('filter-none', 'filter-grayscale', 'filter-sepia', 'filter-vintage',
                 'filter-warm', 'filter-cool', 'filter-dramatic', 'filter-fade', 'filter-noir');
             video.classList.add('filter-' + name);
         }
 
         function applyFilterToVideo(name) {
+            if (!video) return;
             video.classList.remove('filter-none', 'filter-grayscale', 'filter-sepia', 'filter-vintage',
                 'filter-warm', 'filter-cool', 'filter-dramatic', 'filter-fade', 'filter-noir');
             video.classList.add('filter-' + name);
@@ -578,51 +782,64 @@
 
         async function startCamera() {
             if (stream) return;
-            startSpinner.style.display = 'inline-block';
-            startBtnText.textContent = 'Starting…';
-            startBtn.disabled = true;
+            if (startSpinner) startSpinner.style.display = 'inline-block';
+            if (startBtnText) startBtnText.textContent = 'Starting…';
+            if (startBtn) startBtn.disabled = true;
             try {
                 const media = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' }, audio: false });
-                stream = media; video.srcObject = stream;
+                stream = media; if (video) video.srcObject = stream;
                 await new Promise(r => {
+                    if (!video) return r();
                     if (video.readyState >= 2) return r();
                     video.onloadedmetadata = () => r();
                 });
-                startOverlay.style.display = 'none';
-                stopBtn.style.display = 'inline-flex';
-                mirrorBtn.style.display = 'inline-flex';
-                if (isMirrored) video.classList.add('mirror'); else video.classList.remove('mirror');
-                video.muted = true;
+                if (startOverlay) startOverlay.style.display = 'none';
+                if (stopBtn) stopBtn.style.display = 'inline-flex';
+                if (mirrorBtn) mirrorBtn.style.display = 'inline-flex';
+                if (isMirrored && video) video.classList.add('mirror'); else if (video) video.classList.remove('mirror');
+                if (video) video.muted = true;
             } catch (err) {
                 console.error('Camera error', err);
-                alert('Unable to access camera. Please allow camera permission and try again.');
+                try { alert('Unable to access camera. Please allow camera permission and try again.'); } catch (e) { }
             } finally {
-                startSpinner.style.display = 'none';
-                startBtnText.textContent = 'Start Camera';
-                startBtn.disabled = false;
+                if (startSpinner) startSpinner.style.display = 'none';
+                if (startBtnText) startBtnText.textContent = 'Start Camera';
+                if (startBtn) startBtn.disabled = false;
             }
         }
 
+        video.addEventListener('playing', () => {
+            framePhotoPreview.style.display = 'block';
+            function drawLive() {
+                if (!stream) return;
+                framePhotoPreview.srcObject = stream;
+                requestAnimationFrame(drawLive);
+            }
+            drawLive();
+        });
+
+
         function stopCamera() {
             if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
-            video.srcObject = null;
-            startOverlay.style.display = 'flex';
-            stopBtn.style.display = 'none';
-            mirrorBtn.style.display = 'none';
-            
-            numSelect.value = '3';
-            filterSelect.value = 'none';
-            frameColorPicker.value = '#667eea';
-            frameText.value = 'font';
+            if (video) video.srcObject = null;
+            if (startOverlay) startOverlay.style.display = 'flex';
+            if (stopBtn) stopBtn.style.display = 'none';
+            if (mirrorBtn) mirrorBtn.style.display = 'none';
+
+            if (numSelect) numSelect.value = '3';
+            if (filterSelect) filterSelect.value = 'none';
+            if (frameColorPicker) frameColorPicker.value = '#667eea';
+            if (frameText) frameText.value = '';
         }
 
         function flash() {
+            if (!flashEl) return;
             flashEl.classList.add('show');
             setTimeout(() => flashEl.classList.remove('show'), 260);
         }
 
         function captureOnce() {
-            if (!stream) return null;
+            if (!stream || !video) return null;
             const vw = video.videoWidth || video.clientWidth || 1280;
             const vh = video.videoHeight || video.clientHeight || Math.round(vw * 9 / 16);
             offCanvas.width = vw; offCanvas.height = vh;
@@ -642,6 +859,7 @@
         }
 
         async function runCountdown() {
+            if (!countdownEl) return;
             countdownEl.classList.add('show');
             for (let i = 3; i > 0; i--) {
                 countdownEl.textContent = i;
@@ -695,19 +913,40 @@
             }
 
             // Draw photos with white border
+            // Draw photos with white border + STICKERS
             let y = frameTopHeight;
             for (let idx = 0; idx < validImgs.length; idx++) {
                 const img = validImgs[idx];
                 const h = heights[idx];
 
-                // White border around photo
+                // White border
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(framePadding - 5, y - 5, targetWidth + 10, h + 10);
 
                 // Draw photo
                 ctx.drawImage(img, framePadding, y, targetWidth, h);
+
+                // --- Draw stickers on top of this photo ---
+                const stickers = [...frameBox.querySelectorAll('.sticker')];
+                stickers.forEach(st => {
+                    const rect = st.getBoundingClientRect();
+                    const fb = frameBox.getBoundingClientRect();
+                    const relX = (rect.left - fb.left) / fb.width;
+                    const relY = (rect.top - fb.top) / fb.height;
+                    const scale = parseFloat(st.style.transform.replace(/[^0-9.]/g, "")) || 1;
+                    const fontSize = parseFloat(st.style.fontSize) * scale * (targetWidth / fb.width);
+
+                    ctx.font = `${fontSize}px sans-serif`;
+                    ctx.fillText(st.textContent,
+                        framePadding + relX * targetWidth,
+                        y + relY * h
+                    );
+                });
+                // -----------------------------------------
+
                 y += h + photoSpacing;
             }
+
 
             // Draw footer with timestamp
             const now = new Date();
@@ -723,6 +962,7 @@
         }
 
         function refreshThumbs() {
+            if (!thumbContainer) return;
             thumbContainer.innerHTML = '';
             capturedData.forEach((d, idx) => {
                 const box = document.createElement('div');
@@ -751,6 +991,7 @@
                     refreshThumbs();
                     toggleActions();
                     updatePreviewVisibility();
+                    refreshPreviewFrame();
                 };
                 actions.appendChild(dl); actions.appendChild(del);
                 box.appendChild(lbl);
@@ -762,9 +1003,9 @@
 
         function toggleActions() {
             const has = capturedData.length > 0;
-            downloadStripBtn.disabled = !has;
-            downloadAllBtn.disabled = !has;
-            clearBtn.disabled = !has;
+            if (downloadStripBtn) downloadStripBtn.disabled = !has;
+            if (downloadAllBtn) downloadAllBtn.disabled = !has;
+            if (clearBtn) clearBtn.disabled = !has;
         }
 
         function triggerDownload(dataUrl, filename) {
@@ -782,12 +1023,13 @@
             updatePreviewVisibility();
 
             for (let i = 0; i < n; i++) {
-                await runCountdown();
+                if (countdownEl) await runCountdown();
                 flash();
                 const data = captureOnce();
                 if (data) {
                     capturedData.push(data);
                     refreshThumbs();
+                    refreshPreviewFrame();
                 }
             }
 
@@ -795,76 +1037,153 @@
             inSequence = false;
         }
 
-        // UI events
-        startBtn.addEventListener('click', startCamera);
-        stopBtn.addEventListener('click', stopCamera);
-        mirrorBtn.addEventListener('click', () => {
-            isMirrored = !isMirrored;
-            if (isMirrored) video.classList.add('mirror'); else video.classList.remove('mirror');
-            refreshThumbs();
-        });
+        // Frame live preview update
+        function refreshPreviewFrame() {
+            if (!framePhotoPreview) return;
+            if (capturedData.length > 0) {
+                framePhotoPreview.src = capturedData[capturedData.length - 1];
+                framePhotoPreview.style.display = 'block';
+            } else {
+                framePhotoPreview.style.display = 'none';
+            }
+        }
 
-        shutterBtn.addEventListener('click', async () => {
+        // Stickers
+        function addSticker(emoji) {
+            if (!frameBox) return;
+            const el = document.createElement('div');
+            el.className = 'sticker';
+            el.textContent = emoji;
+            el.style.position = 'absolute';
+            el.style.left = '10%';
+            el.style.top = '10%';
+            el.style.fontSize = '42px';
+            el.style.cursor = 'move';
+            el.style.pointerEvents = 'auto'; // allow interaction
+            el.style.userSelect = 'none';
+
+            // append to frameBox (on top of photos)
+            frameBox.appendChild(el);
+            enableDragResize(el);
+        }
+
+        function enableDragResize(el) {
+            let isDragging = false;
+            let startX = 0, startY = 0, initLeft = 0, initTop = 0;
+            let scale = 1;
+
+            el.addEventListener('pointerdown', (ev) => {
+                ev.preventDefault();
+                el.setPointerCapture(ev.pointerId);
+                isDragging = true;
+                startX = ev.clientX;
+                startY = ev.clientY;
+                initLeft = parseFloat(el.style.left) || 0;
+                initTop = parseFloat(el.style.top) || 0;
+            });
+
+            document.addEventListener('pointermove', (ev) => {
+                if (!isDragging) return;
+                const dx = ev.clientX - startX;
+                const dy = ev.clientY - startY;
+                el.style.left = (initLeft + dx) + 'px';
+                el.style.top = (initTop + dy) + 'px';
+            });
+
+            document.addEventListener('pointerup', (ev) => {
+                if (!isDragging) return;
+                isDragging = false;
+                try { el.releasePointerCapture(ev.pointerId); } catch (e) { }
+            });
+
+            // wheel to resize
+            el.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                scale += e.deltaY < 0 ? 0.1 : -0.1;
+                scale = Math.max(0.3, Math.min(4, scale));
+                el.style.transform = `scale(${scale})`;
+            });
+
+            // double-click to remove
+            el.addEventListener('dblclick', () => el.remove());
+        }
+
+        // UI events (safe attach)
+        startBtn && (startBtn.addEventListener('click', startCamera));
+        stopBtn && (stopBtn.addEventListener('click', stopCamera));
+        mirrorBtn && (mirrorBtn.addEventListener('click', () => {
+            isMirrored = !isMirrored;
+            if (video) {
+                if (isMirrored) video.classList.add('mirror'); else video.classList.remove('mirror');
+            }
+            refreshThumbs();
+        }));
+
+        shutterBtn && (shutterBtn.addEventListener('click', async () => {
             if (!stream) {
                 await startCamera();
                 return;
             }
             if (inSequence) return;
-            const n = Math.max(1, Math.min(12, parseInt(numSelect.value || '3', 10)));
+            const n = Math.max(1, Math.min(12, parseInt(numSelect?.value || '3', 10)));
             shutterBtn.style.pointerEvents = 'none';
             shutterBtn.style.opacity = '0.85';
             await captureSequence(n);
             shutterBtn.style.pointerEvents = 'auto';
             shutterBtn.style.opacity = '1';
-        });
+        }));
 
-        // keyboard shortcuts
-        // window.addEventListener('keydown', (e) => {
-        //     if (e.code === 'Space') {
-        //         if (document.activeElement && /input|textarea|select/i.test(document.activeElement.tagName)) return;
-        //         e.preventDefault();
-        //         shutterBtn.click();
-        //     }
-        //     if (e.key === 's' || e.key === 'S') {
-        //         if (!stream) startCamera(); else stopCamera();
-        //     }
-        //     if (e.key === 'm' || e.key === 'M') {
-        //         mirrorBtn.click();
-        //     }
-        // });
-
-        // downloads and clear handlers
-        downloadAllBtn.addEventListener('click', () => {
+        downloadAllBtn && (downloadAllBtn.addEventListener('click', () => {
             capturedData.forEach((d, idx) => triggerDownload(d, `photo-${idx + 1}.png`));
-        });
-        downloadStripBtn.addEventListener('click', async () => {
+        }));
+
+        downloadStripBtn && (downloadStripBtn.addEventListener('click', async () => {
             const s = await createVerticalStripFromData(capturedData);
             if (s) triggerDownload(s, `photostrip-${Date.now()}.png`);
-        });
-        clearBtn.addEventListener('click', () => {
+        }));
+
+        clearBtn && (clearBtn.addEventListener('click', () => {
             capturedData = [];
-            thumbContainer.innerHTML = '';
+            thumbContainer && (thumbContainer.innerHTML = '');
             toggleActions();
             updatePreviewVisibility();
-        });
 
-        // Frame customization handlers
-        frameColorPicker.addEventListener('input', (e) => {
+            if (frameTextPreview) frameTextPreview.textContent = "Event Name";
+            if (frameBox) {
+                frameBox.style.borderColor = "#667eea";
+                frameBox.style.setProperty("--frame-color", "#667eea");
+            }
+            frameTextValue = "";
+            frameColor = "#667eea";
+            refreshPreviewFrame();
+        }));
+
+        // Frame customization handlers (live preview)
+        frameColorPicker && frameColorPicker.addEventListener('input', (e) => {
             frameColor = e.target.value;
+            if (frameBox) frameBox.style.borderColor = frameColor;
         });
 
-        frameText.addEventListener('input', (e) => {
+        frameText && frameText.addEventListener('input', (e) => {
             frameTextValue = e.target.value;
+            if (frameTextPreview) frameTextPreview.textContent = frameTextValue.trim() || "Event Name";
         });
 
-        // Filter selection handler
-        filterSelect.addEventListener('change', (e) => {
+        filterSelect && filterSelect.addEventListener('change', (e) => {
             applyFilterToVideo(e.target.value);
         });
 
-        // Font selection handler
-        fontSelect.addEventListener('change', (e) => {
+        fontSelect && fontSelect.addEventListener('change', (e) => {
             selectedFont = e.target.value;
+            if (frameTextPreview) frameTextPreview.style.fontFamily = selectedFont;
+        });
+
+        // Sticker toolbar click (delegation)
+        stickerPanel && stickerPanel.addEventListener('click', (e) => {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+            const emoji = btn.textContent.trim();
+            if (emoji) addSticker(emoji);
         });
 
         // cleanup
@@ -873,6 +1192,8 @@
         // initial
         updatePreviewVisibility();
         toggleActions();
+        refreshPreviewFrame();
+
     </script>
 </body>
 
